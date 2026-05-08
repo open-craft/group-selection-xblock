@@ -126,7 +126,7 @@ class GroupSelectionXBlock(XBlock):
             f'<div class="group-selection-block" id="group-selection-learner-{block_id}"></div>'
         )
         fragment.add_javascript_url(
-            self.runtime.local_resource_url(self, 'public/js/group_selection_learner.js')
+            self.runtime.local_resource_url(self, 'static/js/group_selection_learner.js')
         )
 
         if stale_mapping:
@@ -269,7 +269,7 @@ class GroupSelectionXBlock(XBlock):
             f'<div class="group-selection-block" id="group-selection-studio-{block_id}"></div>'
         )
         fragment.add_javascript_url(
-            self.runtime.local_resource_url(self, 'public/js/group_selection_studio.js')
+            self.runtime.local_resource_url(self, 'static/js/group_selection_studio.js')
         )
 
         fragment.initialize_js("GroupSelectionStudio", init_data.model_dump(mode="json"))

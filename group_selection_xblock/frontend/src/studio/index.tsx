@@ -16,9 +16,14 @@ export interface StudioRuntime {
 
 export function renderBlock(
   runtime: StudioRuntime,
-  element: HTMLElement,
+  element: Element,
   initData: Record<string, unknown>,
 ): void {
-  const root = createRoot(element);
-  root.render(<StudioView initData={initData} runtime={runtime} />);
+  const container =
+    element && 'jquery' in element
+      ? (element as unknown as HTMLElement[])[0]
+      : element;
+  createRoot(container as HTMLElement).render(
+    <StudioView initData={initData} runtime={runtime} />,
+  );
 }

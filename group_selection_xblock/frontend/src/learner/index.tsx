@@ -11,9 +11,12 @@ import { LearnerView } from './LearnerView';
 
 export function renderBlock(
   _runtime: unknown,
-  element: HTMLElement,
+  element: Element,
   initData: Record<string, unknown>,
 ): void {
-  const root = createRoot(element);
-  root.render(<LearnerView initData={initData} />);
+  const container =
+    element && 'jquery' in element
+      ? (element as unknown as HTMLElement[])[0]
+      : element;
+  createRoot(container as HTMLElement).render(<LearnerView initData={initData} />);
 }

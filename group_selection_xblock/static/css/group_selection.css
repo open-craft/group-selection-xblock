@@ -1,0 +1,299 @@
+/**
+ * Group Selection XBlock styles.
+ *
+ * Uses Paragon CSS variables (--pgn-*) for visual consistency.
+ * All selectors are scoped under .group-selection-block to prevent
+ * style leakage into the Studio wrapper.
+ */
+
+/* Studio font-size fix: the CMS sets html { font-size: 62.5% } */
+.group-selection-block {
+  font-size: 160%;
+}
+
+/* ------------------------------------------------------------------
+ * Learner View
+ * ------------------------------------------------------------------ */
+
+.group-selection-learner {
+  padding: 1.5rem;
+  background: var(--pgn-color-bg-light, #fff);
+  border: 1px solid var(--pgn-color-border, #dee2e6);
+  border-radius: var(--pgn-border-radius-base, 0.25rem);
+}
+
+.group-selection-question {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--pgn-color-dark, #212529);
+  margin-bottom: 1rem;
+}
+
+.group-selection-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.group-selection-choice-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid var(--pgn-color-border, #dee2e6);
+  border-radius: var(--pgn-border-radius-base, 0.25rem);
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.group-selection-choice-label:hover {
+  background-color: var(--pgn-color-bg-light-hover, #f8f9fa);
+}
+
+.group-selection-choice-label input[type="radio"] {
+  margin: 0;
+}
+
+.group-selection-choice-text {
+  font-size: 0.9rem;
+  color: var(--pgn-color-dark, #212529);
+}
+
+.group-selection-error {
+  color: var(--pgn-color-danger, #dc3545);
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  background: var(--pgn-color-danger-bg, #f8d7da);
+  border-radius: var(--pgn-border-radius-base, 0.25rem);
+}
+
+.group-selection-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.group-selection-submit-btn {
+  min-width: 100px;
+}
+
+/* Confirmation states */
+.group-selection-confirmation {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--pgn-color-success-bg, #d4edda);
+  border: 1px solid var(--pgn-color-success, #28a745);
+  border-radius: var(--pgn-border-radius-base, 0.25rem);
+  margin-bottom: 0.75rem;
+}
+
+.group-selection-confirmation-icon {
+  display: flex;
+  align-items: center;
+}
+
+.group-selection-confirmation-icon .material-icons {
+  font-size: 1.5rem;
+  color: var(--pgn-color-success, #28a745);
+}
+
+.group-selection-selected-text {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.group-selection-change-btn {
+  padding: 0;
+  font-size: 0.875rem;
+  text-decoration: underline;
+}
+
+.group-selection-locked-note {
+  font-size: 0.85rem;
+  color: var(--pgn-color-muted, #6c757d);
+  margin-top: 0.5rem;
+}
+
+/* Confirmation modals */
+.group-selection-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.group-selection-modal-dialog {
+  width: 614px;
+  max-width: 90vw;
+  background: var(--pgn-color-bg-light, #fff);
+  border-radius: var(--pgn-border-radius-base, 0.25rem);
+  padding: 1.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.group-selection-modal-heading {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--pgn-color-dark, #212529);
+  margin: 0 0 0.75rem 0;
+}
+
+.group-selection-modal-body {
+  font-size: 0.9rem;
+  color: var(--pgn-color-dark, #212529);
+  margin: 0 0 1.25rem 0;
+  line-height: 1.5;
+}
+
+.group-selection-modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.group-selection-modal-cancel-btn {
+  min-width: 100px;
+}
+
+.group-selection-modal-confirm-btn {
+  min-width: 100px;
+}
+
+/* ------------------------------------------------------------------
+ * Studio Editor
+ * ------------------------------------------------------------------ */
+
+.group-selection-studio-form {
+  padding: 0;
+}
+
+.group-selection-studio-error {
+  margin-bottom: 1rem;
+}
+
+.group-selection-field {
+  margin-bottom: 1.25rem;
+}
+
+.group-selection-field-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  color: var(--pgn-color-dark, #212529);
+}
+
+.group-selection-textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.group-selection-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.group-selection-checkbox-label input[type="checkbox"] {
+  margin: 0;
+}
+
+/* Choice list */
+.group-selection-choicelist {
+  margin-bottom: 0.5rem;
+}
+
+.group-selection-choicerow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.group-selection-choicerow-index {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--pgn-color-muted, #6c757d);
+  min-width: 22px;
+  text-align: right;
+}
+
+.group-selection-choicerow-input {
+  flex: 1;
+  min-width: 120px;
+}
+
+.group-selection-group-dropdown {
+  min-width: 180px;
+}
+
+.group-selection-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--pgn-color-danger, #dc3545);
+  cursor: pointer;
+}
+
+.group-selection-delete-btn:hover {
+  background: var(--pgn-color-danger-bg, #f8d7da);
+  border-radius: var(--pgn-border-radius-base, 0.25rem);
+}
+
+.group-selection-delete-btn .material-icons {
+  font-size: 1.25rem;
+}
+
+.group-selection-no-choices {
+  font-size: 0.875rem;
+  color: var(--pgn-color-muted, #6c757d);
+  font-style: italic;
+  margin: 0.5rem 0;
+}
+
+.group-selection-add-choice-btn {
+  margin-top: 0.5rem;
+}
+
+.group-selection-manage-link {
+  font-size: 0.875rem;
+  color: var(--pgn-color-link, #0d6efd);
+  text-decoration: underline;
+}
+
+.group-selection-manage-link:hover {
+  color: var(--pgn-color-link-hover, #0a58ca);
+}
+
+/* Studio action buttons */
+.group-selection-studio-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--pgn-color-border, #dee2e6);
+}
+
+/* Error message for stale mappings in learner view */
+.group-selection-block-error {
+  padding: 1rem;
+  background: var(--pgn-color-warning-bg, #fff3cd);
+  border: 1px solid var(--pgn-color-warning, #ffc107);
+  border-radius: var(--pgn-border-radius-base, 0.25rem);
+  font-size: 0.9rem;
+  color: var(--pgn-color-dark, #212529);
+}

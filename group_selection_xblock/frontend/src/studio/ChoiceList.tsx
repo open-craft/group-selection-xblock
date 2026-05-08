@@ -49,10 +49,10 @@ export function ChoiceList({
 
       <button
         type="button"
-        className="btn btn-secondary group-selection-add-choice-btn"
+        className="btn btn-primary group-selection-add-choice-btn"
         onClick={onAddChoice}
       >
-        + Add Choice
+        Add Choice
       </button>
     </div>
   );

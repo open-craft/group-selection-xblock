@@ -118,22 +118,19 @@ export function StudioView({ initData, runtime }: StudioViewProps): React.ReactE
 
   return (
     <div className="group-selection-block">
-      {error && (
-        <div className="group-selection-studio-error alert alert-error" role="alert">
-          {error}
-        </div>
-      )}
-
       <div className="group-selection-studio-form">
         {/* Instruction field */}
         <div className="group-selection-field">
           <label htmlFor="group-selection-instruction" className="group-selection-field-label">
             Instruction
           </label>
+          <p className="group-selection-field-help">
+            Add a question that prompts learners to choose their learning path.
+          </p>
           <textarea
             id="group-selection-instruction"
             className="form-control group-selection-textarea"
-            rows={3}
+            rows={4}
             value={questionText}
             onChange={(e) => setQuestionText(e.target.value)}
             placeholder="Enter the instruction or question for learners"
@@ -142,9 +139,31 @@ export function StudioView({ initData, runtime }: StudioViewProps): React.ReactE
 
         {/* Choices section */}
         <div className="group-selection-field">
-          <label className="group-selection-field-label">
-            Choices
-          </label>
+          <div className="group-selection-choices-heading">
+            <div>
+              <h3 className="group-selection-field-label group-selection-choices-title">
+                Choices
+              </h3>
+              <p className="group-selection-field-help">
+                Add options and assign them to content groups to control which content learners see.
+              </p>
+            </div>
+            {courseKey && (
+              <a
+                href={`/group_configurations/${courseKey}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group-selection-manage-link"
+              >
+                Manage content groups
+              </a>
+            )}
+          </div>
+          {error && (
+            <div className="group-selection-studio-error alert alert-error" role="alert">
+              {error}
+            </div>
+          )}
           <ChoiceList
             choices={choices}
             contentGroups={contentGroups}
@@ -164,29 +183,21 @@ export function StudioView({ initData, runtime }: StudioViewProps): React.ReactE
               checked={allowChange}
               onChange={(e) => setAllowChange(e.target.checked)}
             />
-            <span>Allow learners to change their selection</span>
+            <span className="group-selection-checkbox-copy">
+              <span className="group-selection-checkbox-title">
+                Allow learners to change their selection
+              </span>
+              <span className="group-selection-checkbox-help">
+                If enabled, changing the selection will reassign learners to a different content group.
+              </span>
+            </span>
           </label>
         </div>
 
-        {/* Manage content groups link */}
-        {courseKey && (
-          <div className="group-selection-field">
-            <a
-              href={`/group_configurations/${courseKey}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group-selection-manage-link"
-            >
-              Manage content groups
-            </a>
-          </div>
-        )}
-
-        {/* Action buttons */}
         <div className="group-selection-studio-actions">
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn btn-primary group-selection-save-btn"
             onClick={handleSave}
             disabled={saving}
           >
@@ -194,7 +205,7 @@ export function StudioView({ initData, runtime }: StudioViewProps): React.ReactE
           </button>
           <button
             type="button"
-            className="btn btn-secondary"
+            className="btn btn-link group-selection-cancel-btn"
             onClick={handleCancel}
           >
             Cancel

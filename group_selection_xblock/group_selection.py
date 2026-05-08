@@ -125,6 +125,9 @@ class GroupSelectionXBlock(XBlock):
         fragment.add_content(
             f'<div class="group-selection-block" id="group-selection-learner-{block_id}"></div>'
         )
+        fragment.add_css_url(
+            self.runtime.local_resource_url(self, 'static/css/group_selection.css')
+        )
         fragment.add_javascript_url(
             self.runtime.local_resource_url(self, 'static/js/group_selection_learner.js')
         )
@@ -266,7 +269,11 @@ class GroupSelectionXBlock(XBlock):
         )
 
         fragment.add_content(
-            f'<div class="group-selection-block" id="group-selection-studio-{block_id}"></div>'
+            f'<div class="group-selection-studio-root editor-with-buttons is-active" '
+            f'id="group-selection-studio-{block_id}"></div>'
+        )
+        fragment.add_css_url(
+            self.runtime.local_resource_url(self, 'static/css/group_selection.css')
         )
         fragment.add_javascript_url(
             self.runtime.local_resource_url(self, 'static/js/group_selection_studio.js')

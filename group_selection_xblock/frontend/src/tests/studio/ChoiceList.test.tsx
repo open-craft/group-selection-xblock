@@ -60,11 +60,11 @@ describe('ChoiceList', () => {
         onAddChoice={onAddChoice}
       />
     );
-    fireEvent.click(screen.getByRole('button', { name: '+ Add Choice' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Add Choice' }));
     expect(onAddChoice).toHaveBeenCalledTimes(1);
   });
 
-  it('assigns correct index to each choice row', () => {
+  it('does not render visible row numbering', () => {
     const choices: Choice[] = [
       { id: 'a', text: 'A' },
       { id: 'b', text: 'B' },
@@ -80,7 +80,7 @@ describe('ChoiceList', () => {
         onAddChoice={jest.fn()}
       />
     );
-    expect(screen.getByText('1.')).toBeInTheDocument();
-    expect(screen.getByText('2.')).toBeInTheDocument();
+    expect(screen.queryByText('1.')).not.toBeInTheDocument();
+    expect(screen.queryByText('2.')).not.toBeInTheDocument();
   });
 });

@@ -23,6 +23,14 @@ export function renderBlock(
     element && 'jquery' in element
       ? (element as unknown as HTMLElement[])[0]
       : element;
+
+  // Studio hardcodes a short modal body height. Match the carousel editor
+  // pattern and give the sticky action footer enough room to behave well.
+  const modalBody = container.parentElement?.parentElement;
+  if (modalBody instanceof HTMLElement) {
+    modalBody.style.minHeight = '635px';
+  }
+
   createRoot(container as HTMLElement).render(
     <StudioView initData={initData} runtime={runtime} />,
   );

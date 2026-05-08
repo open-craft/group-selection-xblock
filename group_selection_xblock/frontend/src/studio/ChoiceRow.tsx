@@ -31,24 +31,37 @@ export function ChoiceRow({
   onDelete,
   canDelete,
 }: ChoiceRowProps): React.ReactElement {
+  const choiceInputId = `group-selection-choice-text-${choice.id}`;
+  const groupSelectId = `group-selection-choice-group-${choice.id}`;
+
   return (
     <div className="group-selection-choicerow">
-      <span className="group-selection-choicerow-index">{index + 1}.</span>
+      <div className="group-selection-choicerow-choice">
+        <label htmlFor={choiceInputId} className="group-selection-choice-label-text">
+          Choice text
+        </label>
+        <textarea
+          id={choiceInputId}
+          className="form-control group-selection-choicerow-input"
+          value={choice.text}
+          onChange={(e) => onChoiceChange(choice.id, e.target.value)}
+          placeholder="Choice text"
+          rows={1}
+        />
+      </div>
 
-      <input
-        type="text"
-        className="form-control group-selection-choicerow-input"
-        value={choice.text}
-        onChange={(e) => onChoiceChange(choice.id, e.target.value)}
-        placeholder="Choice text"
-      />
-
-      <ContentGroupDropdown
-        choiceId={choice.id}
-        contentGroups={contentGroups}
-        selectedGroupId={selectedGroupId}
-        onChange={onGroupChange}
-      />
+      <div className="group-selection-choicerow-group">
+        <label htmlFor={groupSelectId} className="group-selection-choice-label-text">
+          Content Group*
+        </label>
+        <ContentGroupDropdown
+          id={groupSelectId}
+          choiceId={choice.id}
+          contentGroups={contentGroups}
+          selectedGroupId={selectedGroupId}
+          onChange={onGroupChange}
+        />
+      </div>
 
       {canDelete && (
         <button
@@ -56,6 +69,7 @@ export function ChoiceRow({
           className="btn btn-icon group-selection-delete-btn"
           onClick={() => onDelete(choice.id)}
           title="Remove choice"
+          aria-label={`Remove choice ${index + 1}`}
         >
           <Close />
         </button>

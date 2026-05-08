@@ -30,7 +30,7 @@ describe('ChoiceRow', () => {
     expect(input.value).toBe('IT');
   });
 
-  it('renders the index number', () => {
+  it('uses the index in the remove button label', () => {
     render(
       <ChoiceRow
         choice={mockChoice}
@@ -43,7 +43,7 @@ describe('ChoiceRow', () => {
         canDelete={true}
       />
     );
-    expect(screen.getByText('3.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Remove choice 3' })).toBeInTheDocument();
   });
 
   it('calls onChoiceChange when text is edited', () => {

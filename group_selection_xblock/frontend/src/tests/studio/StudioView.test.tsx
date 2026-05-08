@@ -189,7 +189,7 @@ describe('StudioView', () => {
         runtime={runtime}
       />
     );
-    fireEvent.click(screen.getByRole('button', { name: '+ Add Choice' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Add Choice' }));
     // A new text input should appear.
     expect(screen.getByPlaceholderText('Choice text')).toBeInTheDocument();
   });

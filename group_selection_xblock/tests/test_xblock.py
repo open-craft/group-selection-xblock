@@ -235,9 +235,16 @@ class TestStudentView:
         """When no selection exists, renders the selection form."""
         with patch.object(configured_block, "_get_current_user", return_value=None):
             with patch.object(Fragment, "initialize_js") as mock_init_js:
-                configured_block.student_view()
+                with patch.object(Fragment, "add_css_url") as mock_add_css_url:
+                    configured_block.student_view()
 
         mock_init_js.assert_called_once()
+        mock_add_css_url.assert_called_once()
+        configured_block.runtime.local_resource_url.assert_any_call(
+            configured_block,
+            "static/css/group_selection.css",
+        )
+
         func_name, init_data = mock_init_js.call_args[0]
         assert func_name == "GroupSelectionLearner"
         assert init_data["question_text"] == configured_block.question_text
@@ -391,9 +398,15 @@ class TestStudioView:
             configured_block, "_get_course_content_groups", return_value=[]
         ):
             with patch.object(Fragment, "initialize_js") as mock_init_js:
-                configured_block.studio_view()
+                with patch.object(Fragment, "add_css_url") as mock_add_css_url:
+                    configured_block.studio_view()
 
         mock_init_js.assert_called_once()
+        mock_add_css_url.assert_called_once()
+        configured_block.runtime.local_resource_url.assert_any_call(
+            configured_block,
+            "static/css/group_selection.css",
+        )
 
         func_name, init_data = mock_init_js.call_args[0]
         assert func_name == "GroupSelectionStudio"

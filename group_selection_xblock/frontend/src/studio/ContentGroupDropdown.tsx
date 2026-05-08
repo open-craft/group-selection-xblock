@@ -9,6 +9,7 @@ import React from 'react';
 import type { ContentGroup } from '../common/types';
 
 export interface ContentGroupDropdownProps {
+  id?: string;
   choiceId: string;
   contentGroups: ContentGroup[];
   selectedGroupId: number;
@@ -16,6 +17,7 @@ export interface ContentGroupDropdownProps {
 }
 
 export function ContentGroupDropdown({
+  id,
   choiceId,
   contentGroups,
   selectedGroupId,
@@ -23,6 +25,7 @@ export function ContentGroupDropdown({
 }: ContentGroupDropdownProps): React.ReactElement {
   return (
     <select
+      id={id}
       className="form-control group-selection-group-dropdown"
       value={selectedGroupId || ''}
       onChange={(e) => {

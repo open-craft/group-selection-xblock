@@ -11,7 +11,7 @@ authors = [{name = "OpenCraft"}]
 license = {text = "AGPL-3.0"}
 requires-python = ">=3.11"
 dependencies = [
-    "XBlock>=1.5.0,<3.0",
+    "XBlock>=1.5.0,<7.0",
     "pydantic>=2.12.5,<3",
 ]
 classifiers = [

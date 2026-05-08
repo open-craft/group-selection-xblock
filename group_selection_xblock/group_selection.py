@@ -80,7 +80,7 @@ class GroupSelectionXBlock(XBlock):
         scope=Scope.settings,
     )
 
-    has_author_view = True
+    has_author_view = False
 
     # ------------------------------------------------------------------
     # Learner view

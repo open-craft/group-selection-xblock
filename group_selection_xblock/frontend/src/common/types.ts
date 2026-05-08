@@ -33,6 +33,7 @@ export interface LearnerConfig {
 
 export interface StudioConfig {
   block_id: string;
+  course_key: string;
   question_text: string;
   choices: Choice[];
   choice_group_partition_map: Record<string, { group_id: number; partition_id: number }>;

@@ -46,6 +46,7 @@ class LearnerInitData(BaseModel):
 class StudioInitData(BaseModel):
     """Data passed to the Studio editor React app."""
     block_id: str
+    course_key: str
     question_text: str
     choices: list[Choice]
     choice_group_partition_map: dict[str, dict[str, int]]

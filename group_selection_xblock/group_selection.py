@@ -258,6 +258,7 @@ class GroupSelectionXBlock(XBlock):
 
         init_data = StudioInitData(
             block_id=block_id,
+            course_key=str(self.scope_ids.usage_id.course_key),
             question_text=self.question_text,
             choices=choices_parsed,
             choice_group_partition_map=self.choice_group_partition_map,

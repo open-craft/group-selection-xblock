@@ -9,7 +9,7 @@ import type { HandlerResponse } from './types';
 
 function getCsrfToken(): string {
   if (typeof document === 'undefined') return '';
-  const match = document.cookie.match(/\\bcsrftoken=([^;]*)/);
+  const match = document.cookie.match(/\bcsrftoken=([^;]*)/);
   return match ? match[1] : '';
 }
 

@@ -16,7 +16,6 @@ export interface StudioViewProps {
 }
 
 export function StudioView({ initData, runtime }: StudioViewProps): React.ReactElement {
-  const blockId = initData.block_id as string;
   const contentGroups = initData.content_groups as ContentGroup[];
   const initialChoices = initData.choices as Choice[];
   const handlerUrls = initData.handler_urls as Record<string, string>;
@@ -90,6 +89,7 @@ export function StudioView({ initData, runtime }: StudioViewProps): React.ReactE
     }
 
     setSaving(true);
+    runtime.notify?.('save', { state: 'start' });
     try {
       const result = await postJson(submitUrl, {
         question_text: questionText,
@@ -99,36 +99,44 @@ export function StudioView({ initData, runtime }: StudioViewProps): React.ReactE
       });
 
       if (result.success) {
-        runtime.notify?.('save');
+        runtime.notify?.('save', { state: 'end' });
       } else {
-        setError(result.error || 'Save failed.');
+        runtime.notify?.('error', {
+          title: 'Save Error',
+          message: result.error || 'Save failed.',
+        });
       }
     } catch {
-      setError('An unexpected error occurred.');
+      runtime.notify?.('error', {
+        title: 'Save Error',
+        message: 'An unexpected error occurred.',
+      });
     } finally {
       setSaving(false);
     }
   };
 
   const handleCancel = () => {
-    runtime.notify?.('cancel');
+    runtime.notify?.('cancel', {});
   };
 
-  const courseKey = blockId ? blockId.split('@')[0] : '';
+  const blockId = initData.block_id as string;
+  const courseKey = (initData.course_key as string) || (blockId ? blockId.split('@')[0] : '');
 
   return (
     <div className="group-selection-block">
       <div className="group-selection-studio-form">
         {/* Instruction field */}
         <div className="group-selection-field">
-          <label htmlFor="group-selection-instruction" className="group-selection-field-label">
+          <h3 id="group-selection-instruction-heading" className="group-selection-field-label">
             Instruction
-          </label>
+          </h3>
           <p className="group-selection-field-help">
             Add a question that prompts learners to choose their learning path.
           </p>
           <textarea
             id="group-selection-instruction"
+            aria-labelledby="group-selection-instruction-heading"
             className="form-control group-selection-textarea"
             rows={4}
             value={questionText}

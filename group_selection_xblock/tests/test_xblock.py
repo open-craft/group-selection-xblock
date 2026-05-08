@@ -695,6 +695,7 @@ class TestPydanticModels:
         from group_selection_xblock.types import Choice, ContentGroup, StudioInitData
         data = StudioInitData(
             block_id="block-1",
+            course_key="course-v1:TestX+TS101+2025",
             question_text="Q?",
             choices=[Choice(id="a", text="A")],
             choice_group_partition_map={

@@ -49,6 +49,8 @@ class GroupSelectionXBlock(XBlock):
     selection form and are assigned to the corresponding cohort on submit.
     """
 
+    public_dir = "static"
+
     display_name = String(
         display_name="Display Name",
         default="Group Selection",

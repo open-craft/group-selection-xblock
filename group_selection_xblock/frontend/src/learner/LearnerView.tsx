@@ -1,29 +1,22 @@
 /**
  * LearnerView — root component for the learner-facing selection UI.
  *
- * Determines which sub-component to render based on selection state:
- * - No selection → SelectionForm (unselected state)
- * - Has selection + allow_change → SelectionConfirmation (editable state)
- * - Has selection + !allow_change → SelectionLocked (locked state)
- *
- * When the learner submits, a confirmation modal is shown before the
- * actual POST. The modal varies depending on allow_change and whether
- * this is a first submission or a change.
+ * Always renders SelectionForm. The form handles unselected, selected-editable,
+ * and selected-locked states visually. When the learner submits, a confirmation
+ * modal is shown before the actual POST. The modal varies depending on
+ * allow_change and whether this is a first submission or a change.
  */
 
 import React, { useState } from 'react';
 import type { Choice, SelectionData } from '../common/types';
 import { postJson } from '../common/api';
 import { SelectionForm } from './SelectionForm';
-import { SelectionConfirmation } from './SelectionConfirmation';
-import { SelectionLocked } from './SelectionLocked';
 import { ConfirmModal } from './ConfirmModal';
 
 export interface LearnerViewProps {
   initData: Record<string, unknown>;
 }
 
-type ViewState = 'unselected' | 'selected_editable' | 'selected_locked' | 'changing';
 type ModalType = 'first_submit' | 'change_confirm' | 'final_submit';
 
 export function LearnerView({ initData }: LearnerViewProps): React.ReactElement {
@@ -35,12 +28,6 @@ export function LearnerView({ initData }: LearnerViewProps): React.ReactElement 
   const submitUrl = handlerUrls?.submit_selection || '';
 
   const [currentSelection, setCurrentSelection] = useState<SelectionData | null>(selection);
-  const [viewState, setViewState] = useState<ViewState>(() => {
-    if (selection) {
-      return allowChange ? 'selected_editable' : 'selected_locked';
-    }
-    return 'unselected';
-  });
 
   // Modal state
   const [activeModal, setActiveModal] = useState<ModalType | null>(null);
@@ -56,11 +43,15 @@ export function LearnerView({ initData }: LearnerViewProps): React.ReactElement 
   };
 
   const handleFormSubmit = (choiceId: string, choiceText: string) => {
+    if (currentSelection && currentSelection.choice_id === choiceId) {
+      return;
+    }
+
     setSubmitError(null);
     setPendingChoiceId(choiceId);
     setPendingChoiceText(choiceText);
 
-    if (viewState === 'changing') {
+    if (currentSelection) {
       setActiveModal('change_confirm');
     } else if (allowChange) {
       setActiveModal('first_submit');
@@ -71,11 +62,6 @@ export function LearnerView({ initData }: LearnerViewProps): React.ReactElement 
 
   const handleModalCancel = () => {
     clearModal();
-    if (viewState === 'changing') {
-      // Return to confirmation with the existing selection intact
-      setViewState('selected_editable');
-    }
-    // For 'unselected' state, just stay on the form
   };
 
   const handleModalConfirm = async () => {
@@ -97,7 +83,6 @@ export function LearnerView({ initData }: LearnerViewProps): React.ReactElement 
           modified: new Date().toISOString(),
           can_change: allowChange,
         });
-        setViewState(allowChange ? 'selected_editable' : 'selected_locked');
       } else {
         setSubmitError(result.error || 'An unexpected error occurred.');
         clearModal();
@@ -109,28 +94,6 @@ export function LearnerView({ initData }: LearnerViewProps): React.ReactElement 
       setSubmitting(false);
     }
   };
-
-  const handleChangeClick = () => {
-    setViewState('changing');
-  };
-
-  const handleCancelChange = () => {
-    setViewState('selected_editable');
-  };
-
-  // --- Render helpers ---
-
-  const renderForm = (isChangeMode: boolean) => (
-    <SelectionForm
-      questionText={questionText}
-      choices={choices}
-      onSubmit={handleFormSubmit}
-      preselectedChoiceId={isChangeMode ? currentSelection?.choice_id : undefined}
-      onCancel={isChangeMode ? handleCancelChange : undefined}
-      error={submitError}
-      submitting={submitting}
-    />
-  );
 
   const renderModal = () => {
     if (!activeModal) return null;
@@ -177,41 +140,18 @@ export function LearnerView({ initData }: LearnerViewProps): React.ReactElement 
     return null;
   };
 
-  // --- Main render ---
-
-  if (viewState === 'unselected' || viewState === 'changing') {
-    return (
-      <div className="group-selection-learner">
-        {renderForm(viewState === 'changing')}
-        {renderModal()}
-      </div>
-    );
-  }
-
-  if (viewState === 'selected_locked' && currentSelection) {
-    return (
-      <div className="group-selection-learner">
-        <SelectionLocked
-          questionText={questionText}
-          selectedChoiceId={currentSelection.choice_id}
-          choices={choices}
-        />
-      </div>
-    );
-  }
-
-  if (viewState === 'selected_editable' && currentSelection) {
-    return (
-      <div className="group-selection-learner">
-        <SelectionConfirmation
-          questionText={questionText}
-          selectedChoiceId={currentSelection.choice_id}
-          choices={choices}
-          onChangeClick={handleChangeClick}
-        />
-      </div>
-    );
-  }
-
-  return <div />;
+  return (
+    <div className="group-selection-learner">
+      <SelectionForm
+        questionText={questionText}
+        choices={choices}
+        allowChange={allowChange}
+        savedSelectionId={currentSelection?.choice_id}
+        onSubmit={handleFormSubmit}
+        error={submitError}
+        submitting={submitting}
+      />
+      {renderModal()}
+    </div>
+  );
 }

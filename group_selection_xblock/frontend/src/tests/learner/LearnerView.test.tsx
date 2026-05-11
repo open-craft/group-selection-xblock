@@ -1,13 +1,13 @@
 /**
- * Tests for LearnerView — state machine transitions including modal flows.
+ * Tests for LearnerView — modal flows with persistent SelectionForm.
  *
- * Learner flow with modals:
+ * Learner flow:
  * - allow_change=true, no selection:
- *   Form → Submit click → Modal 1 ("first_submit") → Continue → POST → Confirmation
+ *   Form → Submit → Modal 1 ("first_submit") → Continue → POST → Form with selection
  * - allow_change=true, has selection:
- *   Confirmation → Change selection → Form → Submit click → Modal 2 ("change_confirm") → Change → POST → Confirmation
+ *   Form (preselected) → pick different → Submit → Modal 2 ("change_confirm") → Change → POST → Form updated
  * - allow_change=false, no selection:
- *   Form → Submit click → Modal 3 ("final_submit") → Submit → POST → Locked
+ *   Form → Submit → Modal 3 ("final_submit") → Submit → POST → Form locked
  */
 
 import React from 'react';
@@ -46,9 +46,10 @@ describe('LearnerView', () => {
       <LearnerView initData={buildConfig({ selection: null })} />
     );
     expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
+    expect(screen.getByText('Choose one:')).toBeInTheDocument();
   });
 
-  it('renders SelectionConfirmation when selection exists and allow_change=true', () => {
+  it('renders SelectionForm with preselected choice when selection exists and allow_change=true', () => {
     render(
       <LearnerView
         initData={buildConfig({
@@ -64,10 +65,12 @@ describe('LearnerView', () => {
         })}
       />
     );
-    expect(screen.getByRole('button', { name: 'Change selection' })).toBeInTheDocument();
+    const radio = screen.getByLabelText('IT') as HTMLInputElement;
+    expect(radio.checked).toBe(true);
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeDisabled();
   });
 
-  it('renders SelectionLocked when selection exists and allow_change=false', () => {
+  it('renders SelectionForm with disabled options when selection exists and allow_change=false', () => {
     render(
       <LearnerView
         initData={buildConfig({
@@ -83,62 +86,9 @@ describe('LearnerView', () => {
         })}
       />
     );
-    expect(screen.getByText('Healthcare')).toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', { name: 'Change selection' })
-    ).not.toBeInTheDocument();
-  });
-
-  // --- Change selection flow (no POST involved) ---
-
-  it('transitions from confirmation to form on "Change selection" click', () => {
-    render(
-      <LearnerView
-        initData={buildConfig({
-          selection: {
-            choice_id: 'opt_it',
-            content_group_id: 1,
-            cohort_id: 10,
-            created: '2025-01-15T10:00:00',
-            modified: '2025-01-15T10:00:00',
-            can_change: true,
-          },
-          allow_change: true,
-        })}
-      />
-    );
-
-    fireEvent.click(screen.getByRole('button', { name: 'Change selection' }));
-
-    // Should now see the selection form with Cancel button.
-    expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
-  });
-
-  it('transitions back to confirmation on Cancel click from change mode', () => {
-    render(
-      <LearnerView
-        initData={buildConfig({
-          selection: {
-            choice_id: 'opt_it',
-            content_group_id: 1,
-            cohort_id: 10,
-            created: '2025-01-15T10:00:00',
-            modified: '2025-01-15T10:00:00',
-            can_change: true,
-          },
-          allow_change: true,
-        })}
-      />
-    );
-
-    // Go to change mode.
-    fireEvent.click(screen.getByRole('button', { name: 'Change selection' }));
-    // Click Cancel.
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
-
-    // Should be back to confirmation.
-    expect(screen.getByRole('button', { name: 'Change selection' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Healthcare')).not.toBeDisabled();
+    expect(screen.getByLabelText('IT')).toBeDisabled();
+    expect(screen.getByText('Once submitted, your choice cannot be changed.')).toBeInTheDocument();
   });
 
   // --- Modal 1: first_submit (allow_change=true) ---
@@ -151,7 +101,6 @@ describe('LearnerView', () => {
     fireEvent.click(screen.getByLabelText('IT'));
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    // Modal 1 should appear.
     expect(screen.getByText('You can change your selection later')).toBeInTheDocument();
     expect(screen.getByText('Come back to this page to change your selection at any time.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
@@ -166,18 +115,15 @@ describe('LearnerView', () => {
     fireEvent.click(screen.getByLabelText('IT'));
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    // Modal is shown.
     expect(screen.getByText('You can change your selection later')).toBeInTheDocument();
 
-    // Click Cancel in the modal.
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
-    // Modal should be gone, form should still be visible.
     expect(screen.queryByText('You can change your selection later')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
   });
 
-  it('completes first_submit flow: Continue → POST → transitions to confirmation', async () => {
+  it('completes first_submit flow: Continue → POST → form shows selection', async () => {
     (postJson as jest.Mock).mockResolvedValue({
       success: true,
       choice_id: 'opt_it',
@@ -191,12 +137,12 @@ describe('LearnerView', () => {
     fireEvent.click(screen.getByLabelText('IT'));
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    // Modal 1 is up — click Continue.
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
     await waitFor(() => {
       expect(postJson).toHaveBeenCalledWith('/submit-url', { choice_id: 'opt_it' });
-      expect(screen.getByRole('button', { name: 'Change selection' })).toBeInTheDocument();
+      const radio = screen.getByLabelText('IT') as HTMLInputElement;
+      expect(radio.checked).toBe(true);
     });
   });
 
@@ -210,11 +156,9 @@ describe('LearnerView', () => {
     fireEvent.click(screen.getByLabelText('IT'));
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    // Modal 3 should appear.
     expect(screen.getByText('Submit your choice?')).toBeInTheDocument();
     expect(screen.getByText("Once you click submit, you won't be able to change your selection.")).toBeInTheDocument();
 
-    // Both form and modal have a Submit button; scope to dialog.
     const dialog = screen.getByRole('dialog');
     expect(within(dialog).getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
     expect(within(dialog).getByRole('button', { name: 'Submit' })).toBeInTheDocument();
@@ -230,17 +174,14 @@ describe('LearnerView', () => {
 
     expect(screen.getByText('Submit your choice?')).toBeInTheDocument();
 
-    // Click Cancel in modal.
     const cancelButtons = screen.getAllByRole('button', { name: 'Cancel' });
-    // Modal Cancel is the one inside the overlay.
     fireEvent.click(cancelButtons[0]);
 
-    // Modal gone, form still there.
     expect(screen.queryByText('Submit your choice?')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
   });
 
-  it('completes final_submit flow: Submit → POST → transitions to locked', async () => {
+  it('completes final_submit flow: Submit → POST → form locked', async () => {
     (postJson as jest.Mock).mockResolvedValue({
       success: true,
       choice_id: 'opt_it',
@@ -254,18 +195,17 @@ describe('LearnerView', () => {
     fireEvent.click(screen.getByLabelText('IT'));
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    // Modal 3 is up — click Submit in modal.
     const submitButtons = screen.getAllByRole('button', { name: 'Submit' });
-    fireEvent.click(submitButtons[1]); // modal's Submit button
+    fireEvent.click(submitButtons[1]);
 
     await waitFor(() => {
       expect(postJson).toHaveBeenCalledWith('/submit-url', { choice_id: 'opt_it' });
-      expect(screen.getByText('IT')).toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: 'Change selection' })).not.toBeInTheDocument();
+      expect(screen.getByLabelText('IT')).not.toBeDisabled();
+      expect(screen.getByLabelText('Healthcare')).toBeDisabled();
     });
   });
 
-  // --- Modal 2: change_confirm (changing state) ---
+  // --- Modal 2: change_confirm (has selection, allow_change=true) ---
 
   it('shows Modal 2 on submit when changing selection', () => {
     render(
@@ -284,25 +224,21 @@ describe('LearnerView', () => {
       />
     );
 
-    // Go to change mode.
-    fireEvent.click(screen.getByRole('button', { name: 'Change selection' }));
-    // Select a different choice.
+    // Pick a different choice and submit.
     fireEvent.click(screen.getByLabelText('Healthcare'));
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    // Modal 2 should appear.
     expect(screen.getByText('Change your selection?')).toBeInTheDocument();
     expect(
       screen.getByText('Any work completed in your previous option, will be saved. Switching back will restore your previous progress.')
     ).toBeInTheDocument();
 
-    // Scope to dialog — form also has Cancel/Submit buttons in change mode.
-    const dialog2 = screen.getByRole('dialog');
-    expect(within(dialog2).getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
-    expect(within(dialog2).getByRole('button', { name: 'Change' })).toBeInTheDocument();
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expect(within(dialog).getByRole('button', { name: 'Change' })).toBeInTheDocument();
   });
 
-  it('dismisses Modal 2 on Cancel and returns to confirmation with original selection', async () => {
+  it('dismisses Modal 2 on Cancel and returns to form', async () => {
     render(
       <LearnerView
         initData={buildConfig({
@@ -319,26 +255,21 @@ describe('LearnerView', () => {
       />
     );
 
-    // Go to change mode.
-    fireEvent.click(screen.getByRole('button', { name: 'Change selection' }));
-    // Select different choice.
     fireEvent.click(screen.getByLabelText('Healthcare'));
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
     expect(screen.getByText('Change your selection?')).toBeInTheDocument();
 
-    // Click Cancel in the modal (scoped to dialog — form also has a Cancel button).
     const dialog = screen.getByRole('dialog');
     fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
 
-    // Back to confirmation with original selection (IT).
     await waitFor(() => {
       expect(screen.queryByText('Change your selection?')).not.toBeInTheDocument();
     });
-    expect(screen.getByRole('button', { name: 'Change selection' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
   });
 
-  it('completes change_confirm flow: Change → POST → confirmation with new selection', async () => {
+  it('completes change_confirm flow: Change → POST → form updated', async () => {
     (postJson as jest.Mock).mockResolvedValue({
       success: true,
       choice_id: 'opt_healthcare',
@@ -361,16 +292,15 @@ describe('LearnerView', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'Change selection' }));
     fireEvent.click(screen.getByLabelText('Healthcare'));
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    // Click Change in modal.
     fireEvent.click(screen.getByRole('button', { name: 'Change' }));
 
     await waitFor(() => {
       expect(postJson).toHaveBeenCalledWith('/submit-url', { choice_id: 'opt_healthcare' });
-      expect(screen.getByRole('button', { name: 'Change selection' })).toBeInTheDocument();
+      const radio = screen.getByLabelText('Healthcare') as HTMLInputElement;
+      expect(radio.checked).toBe(true);
     });
   });
 
@@ -389,7 +319,6 @@ describe('LearnerView', () => {
     fireEvent.click(screen.getByLabelText('IT'));
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-    // Click Continue in modal.
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
     await waitFor(() => {

@@ -1,8 +1,8 @@
 /**
  * Tests for SelectionForm component.
  *
- * SelectionForm delegates submission to the parent via onSubmit.
- * The parent (LearnerView) handles modal logic and the actual POST.
+ * SelectionForm is always visible and handles unselected, editable, and locked
+ * states. It delegates submission to the parent via onSubmit.
  */
 
 import React from 'react';
@@ -13,6 +13,7 @@ import type { Choice } from '../../common/types';
 const mockChoices: Choice[] = [
   { id: 'opt_it', text: 'IT' },
   { id: 'opt_healthcare', text: 'Healthcare' },
+  { id: 'opt_education', text: 'Education' },
 ];
 
 describe('SelectionForm', () => {
@@ -27,10 +28,23 @@ describe('SelectionForm', () => {
       <SelectionForm
         questionText="Which industry?"
         choices={mockChoices}
+        allowChange={true}
         onSubmit={onSubmit}
       />
     );
     expect(screen.getByText('Which industry?')).toBeInTheDocument();
+  });
+
+  it('renders "Choose one:" heading', () => {
+    render(
+      <SelectionForm
+        questionText="Q"
+        choices={mockChoices}
+        allowChange={true}
+        onSubmit={onSubmit}
+      />
+    );
+    expect(screen.getByText('Choose one:')).toBeInTheDocument();
   });
 
   it('renders a radio button for each choice', () => {
@@ -38,11 +52,42 @@ describe('SelectionForm', () => {
       <SelectionForm
         questionText="Q"
         choices={mockChoices}
+        allowChange={true}
         onSubmit={onSubmit}
       />
     );
     expect(screen.getByLabelText('IT')).toBeInTheDocument();
     expect(screen.getByLabelText('Healthcare')).toBeInTheDocument();
+    expect(screen.getByLabelText('Education')).toBeInTheDocument();
+  });
+
+  it('shows editable helper text when no saved selection', () => {
+    render(
+      <SelectionForm
+        questionText="Q"
+        choices={mockChoices}
+        allowChange={true}
+        onSubmit={onSubmit}
+      />
+    );
+    expect(
+      screen.getByText('Change your choice anytime. Your work will be saved if you switch back.')
+    ).toBeInTheDocument();
+  });
+
+  it('shows locked helper text when saved selection exists and allowChange=false', () => {
+    render(
+      <SelectionForm
+        questionText="Q"
+        choices={mockChoices}
+        allowChange={false}
+        savedSelectionId="opt_it"
+        onSubmit={onSubmit}
+      />
+    );
+    expect(
+      screen.getByText('Once submitted, your choice cannot be changed.')
+    ).toBeInTheDocument();
   });
 
   it('disables the submit button when no choice is selected', () => {
@@ -50,6 +95,7 @@ describe('SelectionForm', () => {
       <SelectionForm
         questionText="Q"
         choices={mockChoices}
+        allowChange={true}
         onSubmit={onSubmit}
       />
     );
@@ -62,6 +108,7 @@ describe('SelectionForm', () => {
       <SelectionForm
         questionText="Q"
         choices={mockChoices}
+        allowChange={true}
         onSubmit={onSubmit}
       />
     );
@@ -70,16 +117,30 @@ describe('SelectionForm', () => {
     expect(btn).toBeEnabled();
   });
 
+  it('disables submit when selection matches saved selection', () => {
+    render(
+      <SelectionForm
+        questionText="Q"
+        choices={mockChoices}
+        allowChange={true}
+        savedSelectionId="opt_it"
+        onSubmit={onSubmit}
+      />
+    );
+    // IT is preselected via savedSelectionId.
+    const btn = screen.getByRole('button', { name: 'Submit' });
+    expect(btn).toBeDisabled();
+  });
+
   it('shows validation error when submitting with no selection', () => {
     render(
       <SelectionForm
         questionText="Q"
         choices={mockChoices}
+        allowChange={true}
         onSubmit={onSubmit}
       />
     );
-    // Button is disabled but form submit event can still fire.
-    // Use fireEvent.submit on the form element.
     const form = screen.getByRole('button', { name: 'Submit' }).closest('form')!;
     fireEvent.submit(form);
     expect(screen.getByRole('alert')).toHaveTextContent('Please select an option.');
@@ -90,13 +151,12 @@ describe('SelectionForm', () => {
       <SelectionForm
         questionText="Q"
         choices={mockChoices}
+        allowChange={true}
         onSubmit={onSubmit}
       />
     );
-
     fireEvent.click(screen.getByLabelText('IT'));
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
-
     expect(onSubmit).toHaveBeenCalledWith('opt_it', 'IT');
   });
 
@@ -105,6 +165,7 @@ describe('SelectionForm', () => {
       <SelectionForm
         questionText="Q"
         choices={mockChoices}
+        allowChange={true}
         onSubmit={onSubmit}
         error="Server error occurred."
       />
@@ -117,6 +178,7 @@ describe('SelectionForm', () => {
       <SelectionForm
         questionText="Q"
         choices={mockChoices}
+        allowChange={true}
         onSubmit={onSubmit}
         submitting={true}
       />
@@ -125,43 +187,45 @@ describe('SelectionForm', () => {
     expect(screen.getByRole('button', { name: 'Submitting...' })).toBeDisabled();
   });
 
-  it('preselects a choice when preselectedChoiceId is given', () => {
+  it('preselects a choice when savedSelectionId is given', () => {
     render(
       <SelectionForm
         questionText="Q"
         choices={mockChoices}
+        allowChange={true}
+        savedSelectionId="opt_healthcare"
         onSubmit={onSubmit}
-        preselectedChoiceId="opt_healthcare"
       />
     );
     const radio = screen.getByLabelText('Healthcare') as HTMLInputElement;
     expect(radio.checked).toBe(true);
   });
 
-  it('renders a Cancel button when onCancel is provided', () => {
-    const onCancel = jest.fn();
+  it('disables unselected options when locked', () => {
     render(
       <SelectionForm
         questionText="Q"
         choices={mockChoices}
+        allowChange={false}
+        savedSelectionId="opt_it"
         onSubmit={onSubmit}
-        onCancel={onCancel}
       />
     );
-    const cancelBtn = screen.getByRole('button', { name: 'Cancel' });
-    expect(cancelBtn).toBeInTheDocument();
-    fireEvent.click(cancelBtn);
-    expect(onCancel).toHaveBeenCalled();
+    expect(screen.getByLabelText('IT')).not.toBeDisabled();
+    expect(screen.getByLabelText('Healthcare')).toBeDisabled();
+    expect(screen.getByLabelText('Education')).toBeDisabled();
   });
 
-  it('does not render Cancel button when onCancel is not provided', () => {
+  it('disables submit button when locked', () => {
     render(
       <SelectionForm
         questionText="Q"
         choices={mockChoices}
+        allowChange={false}
+        savedSelectionId="opt_it"
         onSubmit={onSubmit}
       />
     );
-    expect(screen.queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeDisabled();
   });
 });

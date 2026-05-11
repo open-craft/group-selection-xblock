@@ -27,9 +27,9 @@ html {
 
 .group-selection-question {
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--pgn-color-dark, #212529);
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 .group-selection-choices {
@@ -63,6 +63,35 @@ html {
   color: var(--pgn-color-dark, #212529);
 }
 
+.group-selection-choice-label.is-selected {
+  border-color: var(--pgn-color-primary, #0075b4);
+  background-color: var(--pgn-color-bg-light, #fff);
+}
+
+.group-selection-choice-label.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--pgn-color-bg-light-hover, #f8f9fa);
+}
+
+.group-selection-choice-label.is-disabled:hover {
+  background-color: var(--pgn-color-bg-light-hover, #f8f9fa);
+}
+
+.group-selection-choices-heading-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--pgn-color-dark, #212529);
+  margin: 0 0 0.75rem 0;
+}
+
+.group-selection-helper-text {
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--pgn-color-muted, #6c757d);
+  margin: 0 0 1rem 0;
+}
+
 .group-selection-error {
   color: var(--pgn-color-danger, #dc3545);
   font-size: 0.875rem;
@@ -79,45 +108,6 @@ html {
 
 .group-selection-submit-btn {
   min-width: 100px;
-}
-
-/* Confirmation states */
-.group-selection-confirmation {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  background: var(--pgn-color-success-bg, #d4edda);
-  border: 1px solid var(--pgn-color-success, #28a745);
-  border-radius: var(--pgn-border-radius-base, 0.25rem);
-  margin-bottom: 0.75rem;
-}
-
-.group-selection-confirmation-icon {
-  display: flex;
-  align-items: center;
-}
-
-.group-selection-confirmation-icon .material-icons {
-  font-size: 1.5rem;
-  color: var(--pgn-color-success, #28a745);
-}
-
-.group-selection-selected-text {
-  margin: 0;
-  font-size: 0.9rem;
-}
-
-.group-selection-change-btn {
-  padding: 0;
-  font-size: 0.875rem;
-  text-decoration: underline;
-}
-
-.group-selection-locked-note {
-  font-size: 0.85rem;
-  color: var(--pgn-color-muted, #6c757d);
-  margin-top: 0.5rem;
 }
 
 /* Confirmation modals */

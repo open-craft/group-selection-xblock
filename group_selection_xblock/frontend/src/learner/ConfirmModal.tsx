@@ -33,12 +33,12 @@ export function ConfirmModal({
         role="dialog"
         aria-modal="true"
       >
-        <h2 className="group-selection-modal-heading">{heading}</h2>
+        <p className="group-selection-modal-heading">{heading}</p>
         <p className="group-selection-modal-body">{body}</p>
         <div className="group-selection-modal-actions">
           <button
             type="button"
-            className="btn btn-secondary group-selection-modal-cancel-btn"
+            className="btn btn-link group-selection-cancel-btn"
             onClick={onCancel}
           >
             {cancelLabel}

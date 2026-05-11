@@ -8,6 +8,7 @@ assignment lives in the backend plugin (group_selection_plugin).
 
 import logging
 
+from django.contrib.auth import get_user_model
 from pydantic import ValidationError
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
@@ -38,6 +39,7 @@ from .types import (
 logger = logging.getLogger(__name__)
 
 
+@XBlock.wants("user")
 class GroupSelectionXBlock(XBlock):
     """
     XBlock that allows learners to self-select into content groups.
@@ -221,20 +223,32 @@ class GroupSelectionXBlock(XBlock):
         """Return the current Django user or None if unavailable."""
         try:
             user_service = self.runtime.service(self, "user")
-            if user_service is not None:
-                current_user = user_service.get_current_user()
-                opt_attrs = current_user.opt_attrs
-                if "edx-platform.user_id" in opt_attrs:
-                    from django.contrib.auth import get_user_model
-                    User = get_user_model()
-                    return User.objects.get(
-                        id=opt_attrs["edx-platform.user_id"]
-                    )
+            if user_service is None:
+                logger.warning("XBlock user service not available")
                 return None
-        except Exception:
-            pass
 
-        return None
+            current_user = user_service.get_current_user()
+            opt_attrs = current_user.opt_attrs
+
+            User = get_user_model()
+
+            if "edx-platform.user_id" in opt_attrs:
+                try:
+                    return User.objects.get(id=opt_attrs["edx-platform.user_id"])
+                except User.DoesNotExist:
+                    logger.warning(
+                        "User with id=%s not found",
+                        opt_attrs["edx-platform.user_id"],
+                    )
+
+            logger.warning(
+                "Could not identify user. opt_attrs=%s",
+                opt_attrs,
+            )
+            return None
+        except Exception:
+            logger.exception("Error getting current user")
+            return None
 
     def _get_choice_text(self, choice_id):
         """Look up the display text for a choice by its ID."""

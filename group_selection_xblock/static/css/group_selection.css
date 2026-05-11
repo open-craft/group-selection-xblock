@@ -176,7 +176,7 @@ html {
   display: flex;
   flex-direction: column;
   min-height: 635px;
-  padding: 0;
+  padding: 3rem;
 }
 
 .group-selection-studio-error {
@@ -265,7 +265,7 @@ html {
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1.35rem;
+  margin-bottom: 10px;
 }
 
 .group-selection-choices-title {
@@ -281,7 +281,7 @@ html {
   grid-template-columns: minmax(220px, 1fr) minmax(240px, 0.34fr) 3.55rem;
   align-items: end;
   column-gap: 1.25rem;
-  margin-bottom: 1.55rem;
+  margin-bottom: 10px;
 }
 
 .group-selection-choicerow-choice,
@@ -292,8 +292,8 @@ html {
 .group-selection-choice-label-text {
   display: block;
   margin-bottom: 0.35rem;
-  color: var(--pgn-color-muted, #6c757d);
-  font-size: 0.82rem;
+  color: var(--pgn-color-muted, #6c757d) !important;
+  font-size: 0.86rem !important;
   font-weight: 600;
   line-height: 1.2;
 }

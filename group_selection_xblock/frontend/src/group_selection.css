@@ -6,12 +6,6 @@
  * to prevent style leakage into the Studio wrapper.
  */
 
-/* Reset rem baseline for environments that shrink the root font-size
-   (e.g. legacy Studio's html { font-size: 62.5% }). */
-.group-selection-block {
-  font-size: 16px;
-}
-
 /* ------------------------------------------------------------------
  * Learner View
  * ------------------------------------------------------------------ */
@@ -24,7 +18,7 @@
 }
 
 .group-selection-question {
-  font-size: 1rem;
+  font-size: 16px;
   font-weight: 400;
   color: var(--pgn-color-dark, #212529);
   margin-bottom: 2rem;
@@ -58,7 +52,7 @@
 }
 
 .group-selection-choice-text {
-  font-size: 0.9rem;
+  font-size: 16px;
   color: var(--pgn-color-dark, #212529);
 }
 
@@ -79,14 +73,14 @@
 }
 
 .group-selection-choices-heading-text {
-  font-size: 1rem;
+  font-size: 16px;
   font-weight: 600;
   color: var(--pgn-color-dark, #212529);
   margin: 0 0 0.75rem 0;
 }
 
 .group-selection-helper-text {
-  font-size: 0.875rem;
+  font-size: 14px;
   font-style: italic;
   color: var(--pgn-color-muted, #6c757d);
   margin: 0 0 1rem 0;
@@ -94,7 +88,7 @@
 
 .group-selection-error {
   color: var(--pgn-color-danger, #dc3545);
-  font-size: 0.875rem;
+  font-size: 14px;
   margin-bottom: 0.75rem;
   padding: 0.5rem;
   background: var(--pgn-color-danger-bg, #f8d7da);
@@ -131,14 +125,14 @@
 }
 
 .group-selection-modal-heading {
-  font-size: 1.125rem;
+  font-size: 17px;
   font-weight: 600;
   color: var(--pgn-color-dark, #212529);
   margin: 0 0 0.75rem 0;
 }
 
 .group-selection-modal-body {
-  font-size: 0.9rem;
+  font-size: 14px;
   color: var(--pgn-color-dark, #212529);
   margin: 0 0 1.25rem 0;
   line-height: 1.5;
@@ -176,7 +170,7 @@
   border-radius: 0.25rem;
   background: #fff5f5;
   color: #b20610;
-  font-size: 0.95rem;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -187,7 +181,7 @@
 .group-selection-field-label {
   display: block;
   font-weight: 600;
-  font-size: 1.25rem;
+  font-size: 17px;
   line-height: 1.25;
   margin: 0 0 0.45rem 0;
   color: var(--pgn-color-dark, #212529);
@@ -195,7 +189,7 @@
 
 .group-selection-field-help {
   margin: 0 0 0.65rem 0;
-  font-size: 0.86rem;
+  font-size: 13px;
   line-height: 1.35;
   color: var(--pgn-color-muted, #6c757d);
 }
@@ -209,7 +203,7 @@
   border: 1px solid var(--pgn-color-border, #bfc3c7);
   border-radius: 0;
   color: var(--pgn-color-dark, #212529);
-  font-size: 0.95rem;
+  font-size: 14px;
   line-height: 1.5;
   box-shadow: none;
 }
@@ -218,13 +212,13 @@
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  font-size: 1rem;
+  font-size: 16px;
   cursor: pointer;
 }
 
 .group-selection-checkbox-label input[type="checkbox"] {
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 16px;
+  height: 16px;
   margin: 0;
   accent-color: #063b3b;
   flex: 0 0 auto;
@@ -239,13 +233,13 @@
 
 .group-selection-checkbox-title {
   color: var(--pgn-color-dark, #212529);
-  font-size: 1.08rem;
+  font-size: 16px;
   line-height: 1.25;
 }
 
 .group-selection-checkbox-help {
   color: var(--pgn-color-muted, #6c757d);
-  font-size: 0.82rem;
+  font-size: 14px;
   line-height: 1.35;
 }
 
@@ -283,7 +277,7 @@
   display: block;
   margin-bottom: 0.35rem;
   color: var(--pgn-color-muted, #6c757d) !important;
-  font-size: 0.86rem !important;
+  font-size: 13px !important;
   font-weight: 600;
   line-height: 1.2;
 }
@@ -297,7 +291,7 @@
   border: 1px solid var(--pgn-color-border, #bfc3c7);
   border-radius: 0;
   color: var(--pgn-color-dark, #212529);
-  font-size: 1rem;
+  font-size: 16px;
   line-height: 1.25;
   box-shadow: none;
 }
@@ -311,7 +305,7 @@
   border-radius: 0.3rem;
   background-color: #fff;
   color: var(--pgn-color-dark, #212529);
-  font-size: 1rem;
+  font-size: 16px;
   box-shadow: none;
 }
 
@@ -339,7 +333,7 @@
 }
 
 .group-selection-no-choices {
-  font-size: 0.875rem;
+  font-size: 13px;
   color: var(--pgn-color-muted, #6c757d);
   font-style: italic;
   margin: 0.5rem 0;
@@ -354,7 +348,7 @@
   border-radius: 0.25rem;
   background: #1e9e45;
   color: #fff;
-  font-size: 0.95rem;
+  font-size: 15px;
   font-weight: 600;
 }
 
@@ -374,7 +368,7 @@
 .group-selection-manage-link {
   flex: 0 0 auto;
   margin-top: 1.55rem;
-  font-size: 0.86rem;
+  font-size: 14px;
   font-weight: 600;
   color: var(--pgn-color-link, #0075b4);
   text-decoration: none;
@@ -407,7 +401,7 @@
   border-radius: 0.25rem;
   background: #0075b4;
   color: #fff;
-  font-size: 1rem;
+  font-size: 16px;
 }
 
 .group-selection-save-btn:hover {
@@ -420,7 +414,7 @@
   border: 0;
   background: transparent;
   color: var(--pgn-color-dark, #212529);
-  font-size: 1.05rem;
+  font-size: 16px;
   text-decoration: none;
 }
 
@@ -463,6 +457,6 @@
   background: var(--pgn-color-warning-bg, #fff3cd);
   border: 1px solid var(--pgn-color-warning, #ffc107);
   border-radius: var(--pgn-border-radius-base, 0.25rem);
-  font-size: 0.9rem;
+  font-size: 14px;
   color: var(--pgn-color-dark, #212529);
 }

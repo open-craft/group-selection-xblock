@@ -290,7 +290,12 @@ class GroupSelectionXBlock(XBlock):
             f'id="group-selection-studio-{block_id}"></div>'
         )
         fragment.add_css_url(
-            self.runtime.local_resource_url(self, 'static/css/group_selection.css')
+            self.runtime.local_resource_url(
+                self,
+                'static/css/group_selection_studio.css'
+                if self._is_legacy_studio()
+                else 'static/css/group_selection.css',
+            )
         )
         fragment.add_javascript_url(
             self.runtime.local_resource_url(self, 'static/js/group_selection_studio.js')
@@ -409,14 +414,32 @@ class GroupSelectionXBlock(XBlock):
     # ------------------------------------------------------------------
 
     @staticmethod
+    def _is_legacy_studio():
+        """
+        Detect whether Studio is the legacy Django-template version
+        rather than the MFE-based version.
+
+        In the legacy Studio, XBlock CSS is loaded inline and can leak into
+        the Studio wrapper, so we serve a prefixed stylesheet scoped under
+        ``.group-selection-block``. In the MFE Studio, XBlocks render in
+        iframes so the non-prefixed stylesheet is sufficient.
+        """
+        try:
+            from django.conf import settings
+            return not getattr(settings, 'ENABLE_STUDIO_MFE', False)
+        except Exception:  # pragma: no cover
+            # If settings aren't available, assume legacy mode (safe default).
+            return True
+
+    @staticmethod
     def workbench_scenarios():
         """Return scenarios for the XBlock SDK workbench."""
         return [
             (
                 "Group Selection",
                 """<vertical_demo>
-<group_selection question_text="Which industry lens would you like?" />
-</vertical_demo>
-""",
+                    <group_selection question_text="Which industry lens would you like?" />
+                    </vertical_demo>
+                """,
             ),
         ]

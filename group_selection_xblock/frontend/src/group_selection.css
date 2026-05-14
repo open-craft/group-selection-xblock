@@ -1,0 +1,462 @@
+/**
+ * Group Selection XBlock styles.
+ *
+ * Uses Paragon CSS variables (--pgn-*) for visual consistency.
+ * All selectors are scoped under .group-selection-block via postcss-prefix-selector
+ * to prevent style leakage into the Studio wrapper.
+ */
+
+/* ------------------------------------------------------------------
+ * Learner View
+ * ------------------------------------------------------------------ */
+
+.group-selection-learner {
+  padding: 1.5rem;
+  background: var(--pgn-color-bg-light, #fff);
+  border: 1px solid var(--pgn-color-border, #dee2e6);
+  border-radius: var(--pgn-border-radius-base, 0.25rem);
+}
+
+.group-selection-question {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--pgn-color-dark, #212529);
+  margin-bottom: 2rem;
+}
+
+.group-selection-choices {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.group-selection-choice-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--pgn-color-border, #dee2e6);
+  border-radius: var(--pgn-border-radius-base, 0.25rem);
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.group-selection-choice-label:hover {
+  background-color: var(--pgn-color-bg-light-hover, #f8f9fa);
+}
+
+.group-selection-choice-label input[type="radio"] {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.group-selection-choice-text {
+  font-size: 16px;
+  color: var(--pgn-color-dark, #212529);
+}
+
+.group-selection-choice-label.is-selected {
+  border-color: var(--pgn-color-primary, #0075b4);
+  background-color: var(--pgn-color-bg-light, #fff);
+  box-shadow: 0 0 0 1px var(--pgn-color-primary, #0075b4);
+}
+
+.group-selection-choice-label.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--pgn-color-bg-light-hover, #f8f9fa);
+}
+
+.group-selection-choice-label.is-disabled:hover {
+  background-color: var(--pgn-color-bg-light-hover, #f8f9fa);
+}
+
+.group-selection-choices-heading-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--pgn-color-dark, #212529);
+  margin: 0 0 0.75rem 0;
+}
+
+.group-selection-helper-text {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--pgn-color-muted, #6c757d);
+  margin: 0 0 1rem 0;
+}
+
+.group-selection-error {
+  color: var(--pgn-color-danger, #dc3545);
+  font-size: 14px;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  background: var(--pgn-color-danger-bg, #f8d7da);
+  border-radius: var(--pgn-border-radius-base, 0.25rem);
+}
+
+.group-selection-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.group-selection-submit-btn {
+  min-width: 100px;
+}
+
+/* Confirmation modals */
+.group-selection-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.group-selection-modal-dialog {
+  width: 614px;
+  max-width: 90vw;
+  background: var(--pgn-color-bg-light, #fff);
+  border-radius: var(--pgn-border-radius-base, 0.25rem);
+  padding: 1.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.group-selection-modal-heading {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--pgn-color-dark, #212529);
+  margin: 0 0 0.75rem 0;
+}
+
+.group-selection-modal-body {
+  font-size: 14px;
+  color: var(--pgn-color-dark, #212529);
+  margin: 0 0 1.25rem 0;
+  line-height: 1.5;
+}
+
+.group-selection-modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.group-selection-modal-cancel-btn {
+  min-width: 100px;
+}
+
+.group-selection-modal-confirm-btn {
+  min-width: 100px;
+}
+
+/* ------------------------------------------------------------------
+ * Studio Editor
+ * ------------------------------------------------------------------ */
+
+.group-selection-studio-form {
+  display: flex;
+  flex-direction: column;
+  min-height: 635px;
+  padding: 3rem;
+}
+
+.group-selection-studio-error {
+  margin: 0 0 1.25rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d23228;
+  border-radius: 0.25rem;
+  background: #fff5f5;
+  color: #b20610;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.group-selection-field {
+  margin-bottom: 2.35rem;
+}
+
+.group-selection-field-label {
+  display: block;
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 1.25;
+  margin: 0 0 0.45rem 0;
+  color: var(--pgn-color-dark, #212529);
+}
+
+.group-selection-field-help {
+  margin: 0 0 0.65rem 0;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--pgn-color-muted, #6c757d);
+}
+
+.group-selection-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 112px;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--pgn-color-border, #bfc3c7);
+  border-radius: 0;
+  color: var(--pgn-color-dark, #212529);
+  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: none;
+}
+
+.group-selection-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.group-selection-checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #063b3b;
+  flex: 0 0 auto;
+  transform: translateY(0.1rem);
+}
+
+.group-selection-checkbox-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.group-selection-checkbox-title {
+  color: var(--pgn-color-dark, #212529);
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.group-selection-checkbox-help {
+  color: var(--pgn-color-muted, #6c757d);
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+/* Choice list */
+.group-selection-choices-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 10px;
+}
+
+.group-selection-choices-title {
+  margin-bottom: 0.3rem;
+}
+
+.group-selection-choicelist {
+  margin-bottom: 0.75rem;
+}
+
+.group-selection-choicerow {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(240px, 0.34fr) 3.55rem;
+  align-items: end;
+  column-gap: 1.25rem;
+  margin-bottom: 10px;
+}
+
+.group-selection-choicerow-choice,
+.group-selection-choicerow-group {
+  min-width: 0;
+}
+
+.group-selection-choice-label-text {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--pgn-color-muted, #6c757d) !important;
+  font-size: 13px !important;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.group-selection-choicerow-input {
+  width: 100%;
+  min-height: 3.3rem;
+  box-sizing: border-box;
+  padding: 0.78rem 0.95rem;
+  resize: vertical;
+  border: 1px solid var(--pgn-color-border, #bfc3c7);
+  border-radius: 0;
+  color: var(--pgn-color-dark, #212529);
+  font-size: 16px;
+  line-height: 1.25;
+  box-shadow: none;
+}
+
+.group-selection-group-dropdown {
+  width: 100%;
+  min-width: 240px;
+  min-height: 3.3rem;
+  padding: 0.72rem 2.35rem 0.72rem 0.95rem;
+  border: 1px solid var(--pgn-color-border, #bfc3c7);
+  border-radius: 0.3rem;
+  background-color: #fff;
+  color: var(--pgn-color-dark, #212529);
+  font-size: 16px;
+  box-shadow: none;
+}
+
+.group-selection-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.55rem;
+  height: 3.3rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.3rem;
+  background: var(--pgn-color-danger, #dc3545);
+  color: #fff;
+  cursor: pointer;
+}
+
+.group-selection-delete-btn:hover {
+  background: #c82333;
+}
+
+.group-selection-delete-btn svg {
+  width: 1.65rem;
+  height: 1.65rem;
+}
+
+.group-selection-no-choices {
+  font-size: 13px;
+  color: var(--pgn-color-muted, #6c757d);
+  font-style: italic;
+  margin: 0.5rem 0;
+}
+
+.group-selection-add-choice-btn {
+  margin-top: 0.85rem;
+  min-width: 7.5rem;
+  min-height: 3.25rem;
+  padding: 0.78rem 1.35rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: #1e9e45;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.group-selection-add-choice-btn:hover {
+  background: #187f38;
+  color: #fff;
+}
+
+.group-selection-add-choice-btn:active,
+.group-selection-add-choice-btn:focus,
+.group-selection-add-choice-btn.active {
+  background: #1e9e45;
+  color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(30, 158, 69, 0.25);
+}
+
+.group-selection-manage-link {
+  flex: 0 0 auto;
+  margin-top: 1.55rem;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--pgn-color-link, #0075b4);
+  text-decoration: none;
+}
+
+.group-selection-manage-link:hover {
+  color: var(--pgn-color-link-hover, #005f91);
+  text-decoration: underline;
+}
+
+/* Studio action buttons */
+.group-selection-studio-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin: auto 0 0;
+  padding: 1.65rem 0;
+  border-top: 1px solid var(--pgn-color-border, #dee2e6);
+  background: #fff;
+}
+
+.group-selection-save-btn {
+  min-width: 5.2rem;
+  min-height: 3.15rem;
+  padding: 0.75rem 1.25rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: #0075b4;
+  color: #fff;
+  font-size: 16px;
+}
+
+.group-selection-save-btn:hover {
+  background: #005f91;
+  color: #fff;
+}
+
+.group-selection-cancel-btn {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--pgn-color-dark, #212529);
+  font-size: 16px;
+  text-decoration: none;
+}
+
+.group-selection-cancel-btn:hover {
+  color: #000;
+  text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .group-selection-choices-heading {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .group-selection-manage-link {
+    margin-top: 0;
+  }
+
+  .group-selection-choicerow {
+    grid-template-columns: 1fr;
+    row-gap: 0.75rem;
+  }
+
+  .group-selection-delete-btn {
+    width: 2.8rem;
+  }
+
+  .group-selection-studio-actions {
+    margin-top: 2.5rem;
+  }
+
+  .group-selection-choices {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Error message for stale mappings in learner view */
+.group-selection-block-error {
+  padding: 1rem;
+  background: var(--pgn-color-warning-bg, #fff3cd);
+  border: 1px solid var(--pgn-color-warning, #ffc107);
+  border-radius: var(--pgn-border-radius-base, 0.25rem);
+  font-size: 14px;
+  color: var(--pgn-color-dark, #212529);
+}

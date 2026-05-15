@@ -224,30 +224,11 @@ class GroupSelectionXBlock(XBlock):
     def _get_current_user(self):
         """Return the current Django user or None if unavailable."""
         try:
-            user_service = self.runtime.service(self, "user")
-            if user_service is None:
-                logger.warning("XBlock user service not available")
+            user_id = self.scope_ids.user_id
+            if user_id is None:
+                logger.warning("scope_ids.user_id is not set")
                 return None
-
-            current_user = user_service.get_current_user()
-            opt_attrs = current_user.opt_attrs
-
-            User = get_user_model()
-
-            if "edx-platform.user_id" in opt_attrs:
-                try:
-                    return User.objects.get(id=opt_attrs["edx-platform.user_id"])
-                except User.DoesNotExist:
-                    logger.warning(
-                        "User with id=%s not found",
-                        opt_attrs["edx-platform.user_id"],
-                    )
-
-            logger.warning(
-                "Could not identify user. opt_attrs=%s",
-                opt_attrs,
-            )
-            return None
+            return get_user_model().objects.get(id=user_id)
         except Exception:
             logger.exception("Error getting current user")
             return None

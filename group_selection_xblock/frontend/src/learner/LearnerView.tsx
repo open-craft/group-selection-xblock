@@ -75,14 +75,9 @@ export function LearnerView({ initData }: LearnerViewProps): React.ReactElement 
 
       if (result.success && result.choice_id && result.choice_text) {
         clearModal();
-        setCurrentSelection({
-          choice_id: result.choice_id,
-          content_group_id: result.content_group_id ?? 0,
-          cohort_id: result.cohort_id ?? null,
-          created: new Date().toISOString(),
-          modified: new Date().toISOString(),
-          can_change: allowChange,
-        });
+        // Reload the page so the LMS re-renders with updated content-group
+        // membership, making gated content on the same unit visible.
+        window.location.reload();
       } else {
         setSubmitError(result.error || 'An unexpected error occurred.');
         clearModal();

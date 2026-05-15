@@ -262,13 +262,13 @@ class GroupSelectionXBlock(XBlock):
             session = getattr(request, 'session', None)
             if session is None:
                 return False
+            course_key = self.scope_ids.usage_id.course_key
             masquerade_settings = session.get('masquerade_settings', {})
-            course_key_str = str(self.scope_ids.usage_id.course_key)
-            masq = masquerade_settings.get(course_key_str)
+            masq = masquerade_settings.get(course_key) or masquerade_settings.get(str(course_key))
             if masq is not None and getattr(masq, 'user_name', None) is None:
                 return True
         except Exception:
-            logger.debug("Unable to check masquerade session", exc_info=True)
+            pass
         return False
 
     def _get_choice_text(self, choice_id):

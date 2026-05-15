@@ -85,6 +85,7 @@ class GroupSelectionXBlock(XBlock):
     )
 
     has_author_view = False
+    show_in_read_only_mode = True
 
     # ------------------------------------------------------------------
     # Learner view
@@ -168,6 +169,24 @@ class GroupSelectionXBlock(XBlock):
         if user is None:
             return {"success": False, "error": "Could not identify user."}
 
+        # Block role-based masquerade: when a staff user is viewing as a
+        # role (not a specific student), scope_ids.user_id stays the
+        # staff user.  Submissions would go to the wrong account.
+        if user.is_staff and self._is_role_based_masquerade():
+            return {
+                "success": False,
+                "error": (
+                    "You are viewing as a role rather than as a specific "
+                    "learner. Use 'Specific student' masquerade mode to "
+                    "submit as a particular learner."
+                ),
+            }
+
+        logger.info(
+            "GroupSelection: submit_selection user=%s (id=%s) for block=%s",
+            user.username, user.id, str(self.scope_ids.usage_id),
+        )
+
         block_config = {
             "choices": [c["id"] for c in self.choices],
             "choice_group_partition_map": self.choice_group_partition_map,
@@ -224,33 +243,33 @@ class GroupSelectionXBlock(XBlock):
     def _get_current_user(self):
         """Return the current Django user or None if unavailable."""
         try:
-            user_service = self.runtime.service(self, "user")
-            if user_service is None:
-                logger.warning("XBlock user service not available")
+            user_id = self.scope_ids.user_id
+            if user_id is None:
+                logger.warning("scope_ids.user_id is not set")
                 return None
-
-            current_user = user_service.get_current_user()
-            opt_attrs = current_user.opt_attrs
-
-            User = get_user_model()
-
-            if "edx-platform.user_id" in opt_attrs:
-                try:
-                    return User.objects.get(id=opt_attrs["edx-platform.user_id"])
-                except User.DoesNotExist:
-                    logger.warning(
-                        "User with id=%s not found",
-                        opt_attrs["edx-platform.user_id"],
-                    )
-
-            logger.warning(
-                "Could not identify user. opt_attrs=%s",
-                opt_attrs,
-            )
-            return None
+            return get_user_model().objects.get(id=user_id)
         except Exception:
             logger.exception("Error getting current user")
             return None
+
+    def _is_role_based_masquerade(self):
+        """Check whether the current request is a role-based masquerade."""
+        try:
+            from crum import get_current_request
+            request = get_current_request()
+            if request is None:
+                return False
+            session = getattr(request, 'session', None)
+            if session is None:
+                return False
+            course_key = self.scope_ids.usage_id.course_key
+            masquerade_settings = session.get('masquerade_settings', {})
+            masq = masquerade_settings.get(course_key) or masquerade_settings.get(str(course_key))
+            if masq is not None and getattr(masq, 'user_name', None) is None:
+                return True
+        except Exception:
+            pass
+        return False
 
     def _get_choice_text(self, choice_id):
         """Look up the display text for a choice by its ID."""

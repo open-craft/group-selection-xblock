@@ -398,6 +398,30 @@ class GroupSelectionXBlock(XBlock):
 
         return [ContentGroup(**g) for g in groups]
 
+    def index_dictionary(self):
+        """
+        Return a dictionary of index-able content for this XBlock.
+
+        Indexes the display name, the question/instruction text,
+        and each choice's text — the choices are the substantive
+        self-selection options shown to learners.
+        """
+        xblock_body = super().index_dictionary()
+        choices_text = " ".join(
+            c.get("text") or "" for c in (self.choices or []) if isinstance(c, dict)
+        ).strip()
+        index_body = {
+            "display_name": self.display_name,
+            "question_text": self.question_text or "",
+            "choices_text": choices_text,
+        }
+        if "content" in xblock_body:
+            xblock_body["content"].update(index_body)
+        else:
+            xblock_body["content"] = index_body
+        xblock_body["content_type"] = "Group Selection"
+        return xblock_body
+
     # ------------------------------------------------------------------
     # OLX / stale-mapping validation
     # ------------------------------------------------------------------

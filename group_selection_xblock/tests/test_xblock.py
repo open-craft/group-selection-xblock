@@ -600,6 +600,50 @@ class TestOLX:
 
 
 # ---------------------------------------------------------------------------
+# Studio content search (Meilisearch) indexing
+# ---------------------------------------------------------------------------
+
+
+class TestIndexDictionary:
+    """Test index_dictionary() for Studio content search."""
+
+    def test_configured_block(self, configured_block):
+        result = configured_block.index_dictionary()
+
+        assert result["content_type"] == "Group Selection"
+        content = result["content"]
+        assert content["display_name"] == "Group Selection"
+        assert content["question_text"] == "Which industry lens would you like?"
+        assert content["choices_text"] == "IT Healthcare"
+        # Non-content fields must not be indexed.
+        assert "choice_group_partition_map" not in content
+        assert "allow_change" not in content
+
+    def test_empty_block(self, block):
+        """An unconfigured block indexes empty strings, not errors."""
+        result = block.index_dictionary()
+
+        content = result["content"]
+        assert content["question_text"] == ""
+        assert content["choices_text"] == ""
+        assert result["content_type"] == "Group Selection"
+
+    def test_choice_ids_not_indexed(self, configured_block):
+        content = configured_block.index_dictionary()["content"]
+        assert "opt_it" not in content["choices_text"]
+        assert "opt_healthcare" not in content["choices_text"]
+
+    def test_malformed_choice_entries_are_skipped(self, block):
+        block.choices = [
+            {"id": "a", "text": "Alpha"},
+            "not-a-dict",
+            {"id": "b"},  # missing text
+        ]
+        content = block.index_dictionary()["content"]
+        assert content["choices_text"] == "Alpha"
+
+
+# ---------------------------------------------------------------------------
 # Phase 2: Pydantic models
 # ---------------------------------------------------------------------------
 

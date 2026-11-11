@@ -642,6 +642,13 @@ class TestIndexDictionary:
         content = block.index_dictionary()["content"]
         assert content["choices_text"] == "Alpha"
 
+    def test_student_view_data(self, configured_block):
+        """Test that the index_dictionary alias works."""
+        result = configured_block.student_view_data()
+
+        assert result == configured_block.index_dictionary()
+        assert result["content_type"] == "Group Selection"
+
 
 # ---------------------------------------------------------------------------
 # Phase 2: Pydantic models

@@ -100,7 +100,8 @@ describe('ConfirmModal', () => {
         onConfirm={onConfirm}
       />
     );
-    const dialog = screen.getByRole('dialog');
+    const dialog = screen.getByRole('dialog', { name: 'H' });
     expect(dialog).toHaveAttribute('aria-modal', 'true');
+    expect(dialog).toHaveAccessibleDescription('B');
   });
 });

@@ -7,7 +7,7 @@
  * - Final submit (change not allowed)
  */
 
-import React from 'react';
+import React, { useId } from 'react';
 
 export interface ConfirmModalProps {
   heading: string;
@@ -26,15 +26,20 @@ export function ConfirmModal({
   onCancel,
   onConfirm,
 }: ConfirmModalProps): React.ReactElement {
+  const headingId = useId();
+  const bodyId = useId();
+
   return (
     <div className="group-selection-modal-overlay">
       <div
         className="group-selection-modal-dialog"
         role="dialog"
         aria-modal="true"
+        aria-labelledby={headingId}
+        aria-describedby={bodyId}
       >
-        <p className="group-selection-modal-heading">{heading}</p>
-        <p className="group-selection-modal-body">{body}</p>
+        <h2 id={headingId} className="group-selection-modal-heading">{heading}</h2>
+        <p id={bodyId} className="group-selection-modal-body">{body}</p>
         <div className="group-selection-modal-actions">
           <button
             type="button"

@@ -125,7 +125,9 @@
 }
 
 .group-selection-block .group-selection-modal-heading {
+  font-family: inherit;
   font-size: 17px;
+  line-height: inherit;
   font-weight: 600;
   color: var(--pgn-color-dark, #212529);
   margin: 0 0 0.75rem 0;

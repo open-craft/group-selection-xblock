@@ -392,10 +392,19 @@ class TestSubmitSelection:
 class TestStudioView:
     """Tests for studio_view rendering."""
 
-    def test_studio_view_renders(self, configured_block):
-        """Studio editor renders with content groups in the context."""
+    @pytest.mark.parametrize(
+        "is_legacy_studio, expected_css",
+        [
+            (False, "static/css/group_selection.css"),
+            (True, "static/css/group_selection_studio.css"),
+        ],
+    )
+    def test_studio_view_renders(self, configured_block, is_legacy_studio, expected_css):
+        """Studio editor renders with content groups and the stylesheet for the Studio mode."""
         with patch.object(
             configured_block, "_get_course_content_groups", return_value=[]
+        ), patch.object(
+            type(configured_block), "_is_legacy_studio", return_value=is_legacy_studio
         ):
             with patch.object(Fragment, "initialize_js") as mock_init_js:
                 with patch.object(Fragment, "add_css_url") as mock_add_css_url:
@@ -405,7 +414,7 @@ class TestStudioView:
         mock_add_css_url.assert_called_once()
         configured_block.runtime.local_resource_url.assert_any_call(
             configured_block,
-            "static/css/group_selection.css",
+            expected_css,
         )
 
         func_name, init_data = mock_init_js.call_args[0]

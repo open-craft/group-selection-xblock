@@ -3,11 +3,14 @@
  *
  * Learner flow:
  * - allow_change=true, no selection:
- *   Form → Submit → Modal 1 ("first_submit") → Continue → POST → Form with selection
+ *   Form → Submit → Modal 1 ("first_submit") → Continue → POST → page reload
  * - allow_change=true, has selection:
- *   Form (preselected) → pick different → Submit → Modal 2 ("change_confirm") → Change → POST → Form updated
+ *   Form (preselected) → pick different → Submit → Modal 2 ("change_confirm") → Change → POST → page reload
  * - allow_change=false, no selection:
- *   Form → Submit → Modal 3 ("final_submit") → Submit → POST → Form locked
+ *   Form → Submit → Modal 3 ("final_submit") → Submit → POST → page reload
+ *
+ * A successful POST reloads the page so the LMS re-renders the unit with the
+ * learner's new content-group membership (and the form in its new state).
  */
 
 import React from 'react';
@@ -19,7 +22,13 @@ jest.mock('../../common/api', () => ({
   postJson: jest.fn(),
 }));
 
+// jsdom doesn't implement page navigation, so mock the reload helper.
+jest.mock('../../common/navigation', () => ({
+  reloadPage: jest.fn(),
+}));
+
 import { postJson } from '../../common/api';
+import { reloadPage } from '../../common/navigation';
 
 const buildConfig = (overrides?: Record<string, unknown>): Record<string, unknown> => ({
   block_id: 'block-1',
@@ -123,7 +132,7 @@ describe('LearnerView', () => {
     expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
   });
 
-  it('completes first_submit flow: Continue → POST → form shows selection', async () => {
+  it('completes first_submit flow: Continue → POST → page reload', async () => {
     (postJson as jest.Mock).mockResolvedValue({
       success: true,
       choice_id: 'opt_it',
@@ -141,9 +150,9 @@ describe('LearnerView', () => {
 
     await waitFor(() => {
       expect(postJson).toHaveBeenCalledWith('/submit-url', { choice_id: 'opt_it' });
-      const radio = screen.getByLabelText('IT') as HTMLInputElement;
-      expect(radio.checked).toBe(true);
+      expect(reloadPage).toHaveBeenCalledTimes(1);
     });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   // --- Modal 3: final_submit (allow_change=false) ---
@@ -181,7 +190,7 @@ describe('LearnerView', () => {
     expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
   });
 
-  it('completes final_submit flow: Submit → POST → form locked', async () => {
+  it('completes final_submit flow: Submit → POST → page reload', async () => {
     (postJson as jest.Mock).mockResolvedValue({
       success: true,
       choice_id: 'opt_it',
@@ -200,9 +209,9 @@ describe('LearnerView', () => {
 
     await waitFor(() => {
       expect(postJson).toHaveBeenCalledWith('/submit-url', { choice_id: 'opt_it' });
-      expect(screen.getByLabelText('IT')).not.toBeDisabled();
-      expect(screen.getByLabelText('Healthcare')).toBeDisabled();
+      expect(reloadPage).toHaveBeenCalledTimes(1);
     });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   // --- Modal 2: change_confirm (has selection, allow_change=true) ---
@@ -269,7 +278,7 @@ describe('LearnerView', () => {
     expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument();
   });
 
-  it('completes change_confirm flow: Change → POST → form updated', async () => {
+  it('completes change_confirm flow: Change → POST → page reload', async () => {
     (postJson as jest.Mock).mockResolvedValue({
       success: true,
       choice_id: 'opt_healthcare',
@@ -299,9 +308,9 @@ describe('LearnerView', () => {
 
     await waitFor(() => {
       expect(postJson).toHaveBeenCalledWith('/submit-url', { choice_id: 'opt_healthcare' });
-      const radio = screen.getByLabelText('Healthcare') as HTMLInputElement;
-      expect(radio.checked).toBe(true);
+      expect(reloadPage).toHaveBeenCalledTimes(1);
     });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   // --- Error handling ---
@@ -324,6 +333,7 @@ describe('LearnerView', () => {
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent('Server error occurred.');
     });
+    expect(reloadPage).not.toHaveBeenCalled();
   });
 
   it('displays generic error on network failure', async () => {
@@ -341,5 +351,6 @@ describe('LearnerView', () => {
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent('An unexpected error occurred.');
     });
+    expect(reloadPage).not.toHaveBeenCalled();
   });
 });

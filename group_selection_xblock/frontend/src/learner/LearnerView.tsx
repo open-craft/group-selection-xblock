@@ -10,6 +10,7 @@
 import React, { useState } from 'react';
 import type { Choice, SelectionData } from '../common/types';
 import { postJson } from '../common/api';
+import { reloadPage } from '../common/navigation';
 import { SelectionForm } from './SelectionForm';
 import { ConfirmModal } from './ConfirmModal';
 
@@ -77,7 +78,7 @@ export function LearnerView({ initData }: LearnerViewProps): React.ReactElement 
         clearModal();
         // Reload the page so the LMS re-renders with updated content-group
         // membership, making gated content on the same unit visible.
-        window.location.reload();
+        reloadPage();
       } else {
         setSubmitError(result.error || 'An unexpected error occurred.');
         clearModal();

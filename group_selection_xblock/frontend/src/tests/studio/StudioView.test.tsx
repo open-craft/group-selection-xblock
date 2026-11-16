@@ -129,7 +129,11 @@ describe('StudioView', () => {
     });
   });
 
-  it('calls postJson and runtime.notify on successful save', async () => {
+  // Saving follows the Studio runtime protocol: notify('save', {state: 'start'}),
+  // then {state: 'end'} on success (which closes the editor), or
+  // notify('error', {title, message}) for Studio to display on failure.
+
+  it('calls postJson and notifies save start/end on successful save', async () => {
     (postJson as jest.Mock).mockResolvedValue({ success: true });
 
     render(
@@ -144,11 +148,13 @@ describe('StudioView', () => {
         choice_group_partition_map: { opt_it: { group_id: 1, partition_id: 50 } },
         allow_change: true,
       });
-      expect(runtime.notify).toHaveBeenCalledWith('save');
+      expect(runtime.notify).toHaveBeenLastCalledWith('save', { state: 'end' });
     });
+    expect(runtime.notify).toHaveBeenNthCalledWith(1, 'save', { state: 'start' });
+    expect(runtime.notify).not.toHaveBeenCalledWith('error', expect.anything());
   });
 
-  it('shows server error when postJson returns failure', async () => {
+  it('notifies a save error with the server message when postJson returns failure', async () => {
     (postJson as jest.Mock).mockResolvedValue({ success: false, error: 'Server error.' });
 
     render(
@@ -157,11 +163,16 @@ describe('StudioView', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent('Server error.');
+      expect(runtime.notify).toHaveBeenCalledWith('error', {
+        title: 'Save Error',
+        message: 'Server error.',
+      });
     });
+    expect(runtime.notify).not.toHaveBeenCalledWith('save', { state: 'end' });
+    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
   });
 
-  it('shows network error when postJson throws', async () => {
+  it('notifies a generic save error when postJson throws', async () => {
     (postJson as jest.Mock).mockRejectedValue(new Error('Network'));
 
     render(
@@ -170,8 +181,13 @@ describe('StudioView', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent('An unexpected error occurred.');
+      expect(runtime.notify).toHaveBeenCalledWith('error', {
+        title: 'Save Error',
+        message: 'An unexpected error occurred.',
+      });
     });
+    expect(runtime.notify).not.toHaveBeenCalledWith('save', { state: 'end' });
+    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
   });
 
   it('calls runtime.notify on cancel click', () => {
@@ -179,7 +195,7 @@ describe('StudioView', () => {
       <StudioView initData={buildConfig()} runtime={runtime} />
     );
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
-    expect(runtime.notify).toHaveBeenCalledWith('cancel');
+    expect(runtime.notify).toHaveBeenCalledWith('cancel', {});
   });
 
   it('adds a new choice row when Add Choice is clicked', () => {

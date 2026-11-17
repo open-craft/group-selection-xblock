@@ -422,6 +422,9 @@ class GroupSelectionXBlock(XBlock):
         xblock_body["content_type"] = "Group Selection"
         return xblock_body
 
+    # Alias needed for client's "Data Bricks" indexer project.
+    student_view_data = index_dictionary
+
     # ------------------------------------------------------------------
     # OLX / stale-mapping validation
     # ------------------------------------------------------------------

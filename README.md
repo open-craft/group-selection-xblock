@@ -56,4 +56,18 @@ Then add `group_selection` to the advanced module list of your course.
 4. Learners see the selection form, pick a choice, and are assigned to the
    matching cohort on submit.
 
+## Running tests
+
+The Python tests need Python 3.11+, and the frontend (Jest) tests need Node.js.
+From the repository root, in a virtual environment:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+make requirements   # pip install -e '.[test]' and npm ci in the frontend
+make test           # runs both suites
+```
+
+To run one suite, use `make test.python` (pytest) or `make test.js` (Jest).
+
 
